@@ -20,13 +20,13 @@ class Node
 end
 
 class ExtractWords
-  WORDS = %w(popcorn corn porn dron)
-  attr_accessor :graph, :word, :visited, :vords
+  WORDS = %w(popcorn corn porn dron drop)
+  attr_accessor :graph, :word, :visited, :word_pan
 
   def initialize(graph)
     @word = ''
     @visited = []
-    @vords = []
+    @word_pan = []
     @graph = graph
   end
 
@@ -37,32 +37,35 @@ class ExtractWords
       @visited = []
     end
 
-    print @vords.uniq
+    print @word_pan
   end
 
   private
 
   def search_valid_word(node)
-    @visited << node
-    @word << node.name
+    track(node)
 
-    @word.chop! unless match?
-
-    if is_word?
-      @vords << @word
-    end
+    @word_pan << @word.dup if is_word?
 
     node.adjacents.each do |n|
       search_valid_word(n) if !@visited.include?(n)
     end
+
+    reset
   end
 
   def is_word?
     WORDS.include?(@word.downcase)
   end
 
-  def match?
-    WORDS.any? { |w| w.start_with?(@word.downcase) }
+  def reset
+    @word.chop!
+    @visited.pop
+  end
+
+  def track(node)
+    @visited << node
+    @word << node.name
   end
 end
 
