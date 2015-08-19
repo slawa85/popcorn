@@ -23,11 +23,11 @@ class ExtractWords
   WORDS = %w(popcorn corn porn dron drop)
   attr_accessor :graph, :word, :visited, :word_pan
 
-  def initialize(graph)
+  def initialize(input_graph)
     @word = ''
     @visited = []
     @word_pan = []
-    @graph = graph
+    @graph = input_graph
   end
 
   def extract_words
@@ -44,21 +44,20 @@ class ExtractWords
 
   def search_valid_word(node)
     track(node)
-
     @word_pan << @word.dup if is_word?
 
-    node.adjacents.each do |n|
-      search_valid_word(n) if !@visited.include?(n)
+    node.adjacents.map do |n|
+      search_valid_word(n) unless @visited.include?(n)
     end
 
-    reset
+    one_step_back
   end
 
   def is_word?
     WORDS.include?(@word.downcase)
   end
 
-  def reset
+  def one_step_back
     @word.chop!
     @visited.pop
   end
@@ -104,7 +103,5 @@ graph.add_edge(o3, p1)
 graph.add_edge(o3, r1)
 graph.add_edge(o4, p1)
 graph.add_edge(o4, p2)
-
-
 
 ExtractWords.new(graph).extract_words
